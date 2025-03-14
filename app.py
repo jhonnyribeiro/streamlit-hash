@@ -8,7 +8,7 @@ from datetime import timedelta
 def carregar_dados(empresas):
     texto_tickers = " ".join(empresas)
     dados_acao = yf.Tickers(texto_tickers)
-    cotacoes_acao = dados_acao.history(period="1d", start='2010-01-01', end='2025-03-13')
+    cotacoes_acao = dados_acao.history(period="1d", start='2010-01-01', end='2025-03-10')
     print(cotacoes_acao)
     cotacoes_acao = cotacoes_acao['Close']
     return cotacoes_acao
@@ -26,7 +26,7 @@ dados = carregar_dados(acoes)
 
 st.write("""
 # App Preço de Ações
-O gráfico abaixo representa o preço das ações do xxxx (Tiker) ao longo dos anos.
+O gráfico abaixo representa o preço das ações ao longo dos anos.
          """)
 
 st.sidebar.header("Filtros")
@@ -47,3 +47,26 @@ intervalo_data = st.sidebar.slider("Selecione o período", min_value=data_inicia
 dados =  dados.loc[intervalo_data[0]:intervalo_data[1]]
 
 st.line_chart(dados)
+
+texto_performance_ativos = ""
+
+if len(lista_acoes) == 0:
+    lista_acoes = list(dados.columns)
+elif len(lista_acoes) == 1:
+    dados = dados.rename(columns={"Close": acao_unica})
+
+for acao in lista_acoes:
+    perfomance_ativo = dados[acao].iloc[-1] / dados[acao].iloc[0] - 1
+    perfomance_ativo = float(perfomance_ativo)
+    if perfomance_ativo > 0:
+        texto_performance_ativos = texto_performance_ativos + f"  \n{acao}: :green[{perfomance_ativo:.1%}]"
+    elif perfomance_ativo < 0:
+        texto_performance_ativos = texto_performance_ativos + f"  \n{acao}: :red[{perfomance_ativo:.1%}]"
+    else:
+        texto_performance_ativos = texto_performance_ativos + f"  \n{acao}: {perfomance_ativo:.1%}"
+st.write(f"""
+### Performance ativos
+Essa foi a performance de cada ativo no periodo selecionado
+         
+{texto_performance_ativos}
+""")
