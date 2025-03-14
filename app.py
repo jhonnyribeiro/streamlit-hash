@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
+from datetime import timedelta
 
 #load data
 @st.cache_data
@@ -31,6 +32,10 @@ if lista_acoes:
         dados = dados.rename(columns={acao_unica: "Close"})
  
  #filtro de datas
+data_inicial = dados.index.min().to_pydatetime()
+data_final = dados.index.max().to_pydatetime()
+intervalo_data = st.sidebar.slider("Selecione o período", min_value=data_inicial, max_value=data_final, value=(data_inicial, data_final), step=timedelta(days=1))
 
+dados =  dados.loc[intervalo_data[0]:intervalo_data[1]]
 
 st.line_chart(dados)
