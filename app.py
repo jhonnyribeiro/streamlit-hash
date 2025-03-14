@@ -55,18 +55,41 @@ if len(lista_acoes) == 0:
 elif len(lista_acoes) == 1:
     dados = dados.rename(columns={"Close": acao_unica})
 
-for acao in lista_acoes:
+carteira = [1000 for acao in lista_acoes]
+total_inicial_carteira = sum(carteira)
+
+for i, acao in enumerate(lista_acoes):
     perfomance_ativo = dados[acao].iloc[-1] / dados[acao].iloc[0] - 1
     perfomance_ativo = float(perfomance_ativo)
+
+    carteira[i] = carteira[i] * ( 1 + perfomance_ativo)
+
     if perfomance_ativo > 0:
         texto_performance_ativos = texto_performance_ativos + f"  \n{acao}: :green[{perfomance_ativo:.1%}]"
     elif perfomance_ativo < 0:
         texto_performance_ativos = texto_performance_ativos + f"  \n{acao}: :red[{perfomance_ativo:.1%}]"
     else:
         texto_performance_ativos = texto_performance_ativos + f"  \n{acao}: {perfomance_ativo:.1%}"
+
+total_final_carteira = sum(carteira)
+performance_carteira = total_final_carteira / total_inicial_carteira - 1
+
+texto_performance_carteira = ""
+
+if performance_carteira > 0:
+    texto_performance_carteira = f" Performance da carteira :green[{performance_carteira:.1%}]"
+elif performance_carteira < 0:
+    texto_performance_carteira = f" Performance da carteira :red[{performance_carteira:.1%}]"
+else:
+    texto_performance_carteira = f" Performance da carteira {performance_carteira:.1%}"
+
+
 st.write(f"""
 ### Performance ativos
 Essa foi a performance de cada ativo no periodo selecionado
          
 {texto_performance_ativos}
+
+#### Carteira
+{texto_performance_carteira}
 """)
