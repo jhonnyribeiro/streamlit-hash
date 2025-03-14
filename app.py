@@ -19,15 +19,18 @@ st.write("""
 # App Preço de Ações
 O gráfico abaixo representa o preço das ações do xxxx (Tiker) ao longo dos anos.
          """)
-#prepare vizualization
 
-lista_acoes = st.multiselect("Ações",dados.columns)
+st.sidebar.header("Filtros")
+#prepare vizualization
+#filtro de ações
+lista_acoes = st.sidebar.multiselect("Ações",dados.columns)
 if lista_acoes:
     dados = dados[lista_acoes]
     if len(lista_acoes) == 1:
         acao_unica = lista_acoes[0]
         dados = dados.rename(columns={acao_unica: "Close"})
  
+ #filtro de datas
 
 
 st.line_chart(dados)
