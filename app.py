@@ -8,12 +8,20 @@ from datetime import timedelta
 def carregar_dados(empresas):
     texto_tickers = " ".join(empresas)
     dados_acao = yf.Tickers(texto_tickers)
-    cotacoes_acao = dados_acao.history(period="1d", start='2010-01-01', end='2024-07-01')
+    cotacoes_acao = dados_acao.history(period="1d", start='2010-01-01', end='2025-03-13')
     print(cotacoes_acao)
     cotacoes_acao = cotacoes_acao['Close']
     return cotacoes_acao
 
-acoes = ['ITSA4.SA', 'PETR4.SA', 'MGLU3.SA', 'VALE3.SA', 'ABEV3.SA', 'GGBR4.SA']
+@st.cache_data
+def carregar_tickers_acoes():
+    base_tickers = pd.read_csv("IBOV.csv", sep=";")
+    tickers = list(base_tickers["Código"])
+    tickers = [item + ".SA" for item in tickers]
+    return tickers
+
+# acoes = ['ITSA4.SA', 'PETR4.SA', 'MGLU3.SA', 'VALE3.SA', 'ABEV3.SA', 'GGBR4.SA']
+acoes = carregar_tickers_acoes()
 dados = carregar_dados(acoes)
 
 st.write("""
